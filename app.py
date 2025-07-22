@@ -229,7 +229,7 @@ def search(current_user):
                 cat_prompt = (
                     f"You are a financial analyst. Analyze the company's performance in the category of '{category}'.\n"
                     f"The following ratios were calculated:\n{ratios_text}\n\n"
-                    f"{config['ratio_prompt'][category]}"
+                    f"{config["ratio_prompt"][category]}"
                     "Give your answer in two parts:\n"
                     "1. A 10-line summary.\n"
                     "2. On a new line, give a performance score for the company based on the analysis. Write exactly: Score: <number between 0 and 100>. No emojis or extra text."

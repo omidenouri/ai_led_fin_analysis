@@ -280,9 +280,9 @@ def search(current_user):
         # After all interpretations, synthesize summary from them
         if "summary" in config["ratio_prompt"]:
             summary_input = (
-                f"ROE Interpretation:\n{category_summaries.get('Detailed Analysis Of ROE', '')}\n\n"
-                f"ROE Driver Interpretation:\n{category_summaries.get('Detailed Analysis Of ROE Driver', '')}\n\n"
-                f"Risk Interpretation:\n{category_summaries.get('Detailed Analysis Of Risk', '')}\n\n"
+                f"ROE Interpretation:\n{category_summaries.get('Detailed Analysis of ROE', '')}\n\n"
+                f"ROE Driver Interpretation:\n{category_summaries.get('Detailed Analysis of ROE Driver', '')}\n\n"
+                f"Risk Interpretation:\n{category_summaries.get('Detailed Analysis of Risk', '')}\n\n"
                 f"{config['ratio_prompt']['summary']}"
                 "\n\nGive your answer in two parts:\n"
                 "1. A 10-line summary.\n"
@@ -480,6 +480,18 @@ def companies(current_user):
     names = df['full_report_sentence'].dropna().tolist()
     candidates = {line.split()[0] for line in names if len(line.split()) > 0}
     return jsonify({'companies': sorted(candidates)})
+
+@app.route('/api/disclaimer')
+@token_required
+def get_disclaimer_markdown(current_user):
+    path = os.path.join("static", "about", "disclaimer.md")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return jsonify({"content": content})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

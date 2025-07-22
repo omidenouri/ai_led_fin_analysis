@@ -16,7 +16,10 @@ function showTab(tabId) {
   document.getElementById(tabId).classList.remove("hidden");
 
   if (tabId === "aboutTab") loadAboutContent();
-  if (tabId === "searchTab") loadIntroMarkdown();
+  if (tabId === "searchTab") {
+    loadIntroMarkdown();
+    loadDisclaimerMarkdown();
+  }
 
   const sidebar = document.getElementById("sidebar");
   if (window.innerWidth < 768) {
@@ -137,6 +140,22 @@ async function loadIntroMarkdown() {
     target.textContent = "Failed to load intro content.";
   }
 }
+
+async function loadDisclaimerMarkdown() {
+  const res = await fetch("/api/disclaimer", {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  const target = document.getElementById("disclaimerContent");
+  if (res.ok) {
+    const data = await res.json();
+    const converter = new showdown.Converter();
+    target.innerHTML = converter.makeHtml(data.content);
+  } else {
+    target.textContent = "Failed to load disclaimer.";
+  }
+}
+
 
 function saveRatios() {
   const token = localStorage.getItem("token");
@@ -263,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("token")) {
     loadConfig();
     loadIntroMarkdown();
+    loadDisclaimerMarkdown();
   }
 });
 
@@ -381,7 +401,7 @@ resultJson.innerHTML += `
     if (data.result.category_summaries) {
       
 
-        const preferredOrder = ["summary", "Detailed Analysis Of ROE", "Detailed Analysis Of ROE Driver", "Detailed Analysis Of Risk"];
+        const preferredOrder = ["summary", "Detailed Analysis of ROE", "Detailed Analysis of ROE Driver", "Detailed Analysis of Risk"];
         const summaries = data.result.category_summaries;
         // Sort the categories based on preferredOrder
         const sortedCategories = Object.keys(summaries).sort((a, b) => {

@@ -27,6 +27,12 @@ function showTab(tabId) {
   }
 }
 
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("-translate-x-full");
+}
+
+
 function logout() {
   localStorage.removeItem("token");
   window.location.href = "/";
@@ -339,9 +345,9 @@ function closeModal() {
 
 document.addEventListener("click", function (e) {
   const sidebar = document.getElementById("sidebar");
-  const toggle = document.getElementById("menuToggle");
-  if (!sidebar.contains(e.target) && !toggle.contains(e.target) && window.innerWidth < 768) {
-    sidebar.classList.add("hidden");
+  const toggle = document.querySelector("button[onclick='toggleSidebar()']");
+  if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+    sidebar.classList.add("-translate-x-full");
   }
 });
 
@@ -467,9 +473,9 @@ summary.innerHTML = `
          <table class="min-w-full table-auto text-sm border border-gray-300 bg-white">
           <thead class="bg-gray-100">
            <tr>
-             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800">Ratio</th>
-             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800">${currentYear}</th>
-             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800">${previousYear}</th>
+             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800 text-left">Ratio</th>
+             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800 text-center">${currentYear}</th>
+             <th class="px-3 py-2 text-left border bg-gray-50 text-gray-800 text-center">${previousYear}</th>
            </tr>
          </thead>
          <tbody>
@@ -478,12 +484,29 @@ summary.innerHTML = `
         tableHtml += `
             <tr>
              <td class="px-3 py-1 border bg-white text-gray-800">${r.ratio}</td>
-             <td class="px-3 py-1 border bg-white text-gray-800">
-  ${typeof r.value === 'number' ? 
-    (r.ratio.toLowerCase().includes("roe") ? (r.value * 100).toFixed(2) + '%' : r.value.toFixed(4)) 
-    : (r.value ?? '-')}
+             <td class="px-3 py-1 border bg-white text-gray-800 text-center">
+  ${(() => {
+    const value = r.value;
+    const before = r.value_before_year;
+
+    if (typeof value === 'number') {
+      const formatted = r.ratio.toLowerCase().includes("roe") ? (value * 100).toFixed(2) + '%' : value.toFixed(4);
+      if (typeof before === 'number') {
+        const isUp = value > before;
+        const isDown = value < before;
+        const arrow = isUp ? '▲' : isDown ? '▼' : '';
+        const color = isUp ? 'text-green-600' : isDown ? 'text-red-500' : '';
+        return `<span>${formatted}</span> <span class="${color}">${arrow}</span>`;
+      } else {
+        return formatted;
+      }
+    } else {
+      return value ?? '-';
+    }
+  })()}
 </td>
-<td class="px-3 py-1 border bg-white text-gray-800">
+
+<td class="px-3 py-1 border bg-white text-gray-800 text-center">
   ${typeof r.value_before_year === 'number' ? 
     (r.ratio.toLowerCase().includes("roe") ? (r.value_before_year * 100).toFixed(2) + '%' : r.value_before_year.toFixed(4)) 
     : (r.value_before_year ?? '-')}
@@ -552,18 +575,23 @@ if (cat.toLowerCase() === "summary") {
   contentHtml += flowChartHtml;
 }
 
-contentHtml += converter.makeHtml(text);
+const converter = new showdown.Converter({ tables: true });
+const formatted = converter.makeHtml(text);
+contentHtml += `<div class="prose prose-sm max-w-none">${formatted}</div>`;
+
+
+
 
 body.innerHTML = contentHtml;
 
 
 requestAnimationFrame(() => {
   if (window.LeaderLine) {
-    // 🧹 Clear previous arrows
+    // Clear previous arrows
     currentLines.forEach(line => line.remove());
     currentLines = [];
 
-    // ➕ Draw and store new arrows
+    // Draw and store new arrows
     currentLines.push(
       new LeaderLine(document.getElementById("assetBox"), document.getElementById("roeBox"), {
         color: "#1e3a8a",

@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   
     if (res.ok) {
       localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+      window.location.href = data.redirect || "/dashboard";
     } else {
       errorMsg.textContent = data.error;
       errorMsg.classList.remove("hidden");

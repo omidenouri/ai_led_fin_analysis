@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Splash</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: black;
+    }
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <video id="splashVideo" autoplay muted playsinline>
+    <source src="{{ url_for('static', filename='videos/splash.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <script>
+    document.getElementById("splashVideo").addEventListener("ended", function () {
+      window.location.href = "/dashboard";
+    });
+  </script>
+
+  <script>
+    if (performance.navigation.type === 2) {
+      window.location.href = "/dashboard";
+    }
+  </script>
+</body>
+</html>

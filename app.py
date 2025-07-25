@@ -52,6 +52,11 @@ def index():
 def dashboard():
     return render_template('dashboard.html')
 
+@app.route('/splash')
+def splash():
+    return render_template('splash.html')
+
+
 @app.route('/api/login', methods=['POST'])
 def login():
     credentials = request.get_json()
@@ -65,7 +70,7 @@ def login():
                 'username': username,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
             }, app.config['SECRET_KEY'], algorithm='HS256')
-            return jsonify({'token': token})
+            return jsonify({'token': token, 'redirect': '/splash'})
     return jsonify({'error': 'Invalid credentials'}), 401
 
 #load intro.md content

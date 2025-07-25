@@ -39,8 +39,19 @@ Risk has multiple dimensions. We are looking at four measures of risk.
 
 **Business risk:** What are the operating risks the company faces.
 
-**Measures:** NLP measures of Legal & Regulatory Risk, Tax Risk, Other Systematic Risk and Other Idiosyncratic Risk
+**Measures:** NLP measures of Legal & Regulatory Risk, Tax Risk, Other Systematic Risk and Other Idiosyncratic Risk <small>(campbell et al. 2014)</small>
 
 **Reporting risk:** Because we take information from financial statements, we want to gauge its quality. How clearly, accurately, and honestly a company presents its financial and business information in its annual report. High-quality reporting means the information is easy to understand, complete, and gives a true picture of the company’s performance, risks, and future outlook—helping investors and others make informed decisions.
 
-**Measures:** NLP measures of sentiment, specificity, forward-looking information, sentence length, depth, and unfamiliarity
+**Measures:** NLP measures of sentiment, specificity, forward-looking information, sentence length, depth, and unfamiliarity <small>(Loughran & McDonald 2011, Muslu et al.2015, Hope et al. 2016)</small>
+
+## 📚 References
+
+<small>
+
+- Hope, O. K., Hu, D., & Lu, H. (2016). *The benefits of specific risk-factor disclosures*. **Review of Accounting Studies**, 21(4), 1005–1045.  
+- Loughran, T., & McDonald, B. (2011). *When is a liability not a liability? Textual analysis, dictionaries, and 10‐Ks*. **The Journal of Finance**, 66(1), 35–65.  
+- Muslu, V., Radhakrishnan, S., Subramanyam, K. R., & Lim, D. (2015). *Forward-looking MD&A disclosures and the information environment*. **Management Science**, 61(5), 931–948.  
+- Campbell, J. L., Chen, H., Dhaliwal, D. S., Lu, H. M., & Steele, L. B. (2014). *The information content of mandatory risk factor disclosures in corporate filings*. **Review of Accounting Studies**, 19(1), 396–455.
+
+</small>

@@ -175,14 +175,27 @@ body {
       <section id="searchTab" class="fade-in">
 
 <!-- Intro Markdown -->
-<details class="prose max-w-3xl mx-auto bg-white p-4 rounded shadow mb-4" open>
-  <summary class="text-2xl font-semibold text-gray-800 cursor-pointer">ℹ️ About This Project</summary>
-  <div id="introMarkdown" class="prose prose-blue max-w-none text-gray-800"></div>
-  <p class="text-sm text-gray-600 mt-2">
-    for more details see
-    <a href="#" onclick="showTab('aboutTab')" class="text-blue-600 hover:underline">Methodology</a>.
-  </p>
-</details>
+<div class="flex flex-col md:flex-row justify-center items-stretch gap-6 mb-4 max-w-6xl mx-auto">
+  <!-- Left: About Project Section -->
+  <div class="md:w-2/3 flex flex-col">
+    <details class="prose bg-white p-4 rounded shadow flex-1 h-full" open>
+      <summary class="text-2xl font-semibold text-gray-800 cursor-pointer">ℹ️ About This Project</summary>
+      <div id="introMarkdown" class="prose prose-blue max-w-none text-gray-800 mt-2"></div>
+      <p class="text-sm text-gray-600 mt-2">
+        For more details see
+        <a href="#" onclick="showTab('aboutTab')" class="text-blue-600 hover:underline">Methodology</a>.
+      </p>
+    </details>
+  </div>
+
+  <!-- Right: Stretching Image -->
+  <div class="hidden md:flex md:w-1/3">
+    <img src="{{ url_for('static', filename='images/intro_side_image.png') }}"
+         alt="AI Financial Dashboard"
+         class="rounded shadow-md object-cover h-full w-full">
+  </div>
+</div>
+
         
   <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6 mt-4">
     <h2 class="text-2xl font-bold mb-6 text-center text-blue-900" style="font-family: 'EB Garamond', serif;">

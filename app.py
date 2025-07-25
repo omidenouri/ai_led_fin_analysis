@@ -79,6 +79,7 @@ def get_intro_markdown(current_user):
         return jsonify({"content": content})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 # UPDATED app.py to compute ratios using reshaped_data.csv and Ratio.xlsx
 
@@ -281,7 +282,7 @@ def search(current_user):
         if "summary" in config["ratio_prompt"]:
             summary_input = (
                 f"ROE Interpretation:\n{category_summaries.get('Detailed Analysis of ROE', '')}\n\n"
-                f"ROE Driver Interpretation:\n{category_summaries.get('Detailed Analysis of ROE Driver', '')}\n\n"
+                f"ROE Driver Interpretation:\n{category_summaries.get('Detailed Analysis of ROE Drivers', '')}\n\n"
                 f"Risk Interpretation:\n{category_summaries.get('Detailed Analysis of Risk', '')}\n\n"
                 f"{config['ratio_prompt']['summary']}"
                 "\n\nGive your answer in two parts:\n"
@@ -350,12 +351,16 @@ def search(current_user):
 @app.route('/api/archive', methods=['GET'])
 @token_required
 def archive(current_user):
+    if current_user != "admin":
+        return jsonify({'error': 'Forbidden'}), 403
     data = load_json('archive.json')
     return jsonify({'archive': data})
 
 @app.route('/api/archive/delete', methods=['POST'])
 @token_required
 def delete_archive_entry(current_user):
+    if current_user != "admin":
+        return jsonify({'error': 'Unauthorized'}), 403
     data = request.get_json()
     company_name = data.get('company_name')
     fiscal_year = str(data.get('fiscal_year'))
@@ -390,6 +395,19 @@ def get_about_markdown(current_user):
         return jsonify({"content": content})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/funding')
+@token_required
+def get_funding_markdown(current_user):
+    path = os.path.join("static", "about", "funding.md")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return jsonify({"content": content})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 

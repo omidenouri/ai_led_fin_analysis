@@ -28,13 +28,13 @@ body {
   }
 
   #aboutContent h1, #aboutContent h2, #aboutContent h3 {
-  color: #1e3a8a; /* Tailwind blue-800 */
+  color: #1e3a8a; 
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
 
 #aboutContent p, #aboutContent li {
-  color: #1f2937; /* Tailwind gray-800 */
+  color: #1f2937; 
   font-size: 0.875rem;
   line-height: 1.6;
 }
@@ -64,6 +64,15 @@ body {
 .prose ul {
   list-style-type: disc;
   margin-left: 1.5rem;
+}
+
+.markdown-body h1, 
+.markdown-body h2, 
+.markdown-body h3 {
+  font-size: 1rem;       
+  font-weight: bold;     
+  margin: 1em 0 0.5em;   
+  color: #1f2937;        
 }
 
   
@@ -123,7 +132,7 @@ body {
       </button>
     </li>
 
-    <li>
+    <li id="archiveTabBtn" class="hidden">
       <button type="button" onclick="showTab('archiveTab'); toggleMenu()" class="w-full flex items-center gap-2 px-3 py-2 text-left rounded hover:bg-gray-100 transition">
         <span>📁</span> <span class="text-sm font-medium text-gray-700">Archive</span>
       </button>
@@ -138,6 +147,12 @@ body {
     <li>
   <button type="button" onclick="showTab('aboutTab'); toggleMenu()" class="w-full flex items-center gap-2 px-3 py-2 text-left rounded hover:bg-gray-100 transition">
     <span>🧾</span> <span class="text-sm font-medium text-gray-700">Methodology</span>
+  </button>
+</li>
+
+<li>
+  <button type="button" onclick="showTab('fundingTab'); toggleMenu()" class="w-full flex items-center gap-2 px-3 py-2 text-left rounded hover:bg-gray-100 transition">
+    <span>🏛️</span> <span class="text-sm font-medium text-gray-700">Project Funding and Leads</span>
   </button>
 </li>
 
@@ -157,7 +172,7 @@ body {
 
 <!-- Intro Markdown -->
 <details class="prose max-w-3xl mx-auto bg-white p-4 rounded shadow mb-4" open>
-  <summary class="text-lg font-semibold text-gray-800 cursor-pointer">ℹ️</summary>
+  <summary class="text-2xl font-semibold text-gray-800 cursor-pointer">ℹ️ About This Project</summary>
   <div id="introMarkdown" class="prose prose-blue max-w-none text-gray-800"></div>
   <p class="text-sm text-gray-600 mt-2">
     for more details see
@@ -287,6 +302,16 @@ body {
   <div class="max-w-3xl mx-auto bg-white shadow-md p-6 rounded">
     <h2 class="text-2xl font-bold mb-4 text-blue-800">Methodology</h2>
     <div id="aboutContent" class="markdown-body text-gray-800">
+      Loading...
+    </div>
+  </div>
+</section>
+
+<!-- Funding -->
+<section id="fundingTab" class="hidden fade-in">
+  <div class="max-w-3xl mx-auto bg-white shadow-md p-6 rounded">
+    <h2 class="text-2xl font-bold mb-4 text-blue-800">Project Funding and Leads</h2>
+    <div id="fundingContent" class="markdown-body text-gray-800">
       Loading...
     </div>
   </div>

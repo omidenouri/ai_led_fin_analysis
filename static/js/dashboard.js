@@ -16,6 +16,7 @@ function showTab(tabId) {
   document.getElementById(tabId).classList.remove("hidden");
 
   if (tabId === "aboutTab") loadAboutContent();
+  if (tabId === "fundingTab") loadFundingContent();
   if (tabId === "searchTab") {
     loadIntroMarkdown();
     loadDisclaimerMarkdown();
@@ -212,6 +213,23 @@ async function loadAboutContent() {
   }
 }
 
+async function loadFundingContent() {
+  const res = await fetch("/api/funding", {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  const data = await res.json();
+  const target = document.getElementById("fundingContent");
+
+  if (res.ok) {
+    const converter = new showdown.Converter();
+    target.innerHTML = converter.makeHtml(data.content);
+  } else {
+    target.textContent = "Failed to load funding content.";
+  }
+}
+
+
 function renderPromptEditor(prompts) {
   const list = document.getElementById("promptEditorList");
   list.innerHTML = "";
@@ -407,7 +425,7 @@ resultJson.innerHTML += `
     if (data.result.category_summaries) {
       
 
-        const preferredOrder = ["summary", "Detailed Analysis of ROE", "Detailed Analysis of ROE Driver", "Detailed Analysis of Risk"];
+        const preferredOrder = ["summary", "Detailed Analysis of ROE", "Detailed Analysis of ROE Drivers", "Detailed Analysis of Risk"];
         const summaries = data.result.category_summaries;
         // Sort the categories based on preferredOrder
         const sortedCategories = Object.keys(summaries).sort((a, b) => {
@@ -551,7 +569,7 @@ const flowChartHtml = `
       YEAR ${year}<br>
       Value: ${dupontRatios["profit margin"]}
     </div>
-    <div class="ml-20">x</div>
+    <div class="ml-20"></div>
     <div id="gearingBox" class="border p-2 rounded bg-white shadow text-left w-48">
       <strong>Gearing:</strong><br>
       YEAR ${year}<br>
@@ -781,6 +799,7 @@ async function loadConfig() {
 
     if (currentUser === "admin") {
       document.getElementById("settingsTabBtn").classList.remove("hidden");
+      document.getElementById("archiveTabBtn").classList.remove("hidden");
       loadRatios();
     }
 

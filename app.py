@@ -44,9 +44,32 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            if auth_header.startswith('Bearer '):
+                token = auth_header[7:]
+        if not token:
+            return jsonify({'error': 'Token missing'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            if data.get("username") != "admin":
+                return jsonify({'error': 'Admin access only'}), 403
+            request.user = data
+        except:
+            return jsonify({'error': 'Token invalid'}), 401
+
+        return f(*args, **kwargs)
+    return decorated
+
+
 @app.route('/')
 def index():
-    return render_template('login.html')
+    return render_template('splash.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -56,6 +79,9 @@ def dashboard():
 def splash():
     return render_template('splash.html')
 
+@app.route('/login.html')
+def login_page():
+    return render_template('login.html')
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -75,8 +101,7 @@ def login():
 
 #load intro.md content
 @app.route('/api/intro')
-@token_required
-def get_intro_markdown(current_user):
+def get_intro_markdown():
     path = os.path.join("static", "about", "intro.md")
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -89,8 +114,8 @@ def get_intro_markdown(current_user):
 # UPDATED app.py to compute ratios using reshaped_data.csv and Ratio.xlsx
 
 @app.route('/api/years/<symbol>')
-@token_required
-def get_years(current_user, symbol):
+
+def get_years(symbol):
     try:
         df = pd.read_csv("reshaped_data.csv")
         symbol = symbol.strip().upper()
@@ -101,8 +126,7 @@ def get_years(current_user, symbol):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/search', methods=['POST'])
-@token_required
-def search(current_user):
+def search():
     data = request.get_json()
     company = data.get("company_name")
     year = str(data.get("fiscal_year"))
@@ -354,18 +378,14 @@ def search(current_user):
 
 
 @app.route('/api/archive', methods=['GET'])
-@token_required
-def archive(current_user):
-    if current_user != "admin":
-        return jsonify({'error': 'Forbidden'}), 403
+@admin_required
+def archive():
     data = load_json('archive.json')
     return jsonify({'archive': data})
 
 @app.route('/api/archive/delete', methods=['POST'])
-@token_required
-def delete_archive_entry(current_user):
-    if current_user != "admin":
-        return jsonify({'error': 'Unauthorized'}), 403
+@admin_required
+def delete_archive_entry():
     data = request.get_json()
     company_name = data.get('company_name')
     fiscal_year = str(data.get('fiscal_year'))
@@ -391,8 +411,7 @@ def delete_archive_entry(current_user):
 from flask import send_from_directory
 
 @app.route('/api/about')
-@token_required
-def get_about_markdown(current_user):
+def get_about_markdown():
     path = os.path.join("static", "about", "about.md")
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -403,8 +422,7 @@ def get_about_markdown(current_user):
     
 
 @app.route('/api/funding')
-@token_required
-def get_funding_markdown(current_user):
+def get_funding_markdown():
     path = os.path.join("static", "about", "funding.md")
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -417,8 +435,8 @@ def get_funding_markdown(current_user):
 
 
 @app.route('/api/config', methods=['GET', 'POST'])
-@token_required
-def config(current_user):
+@admin_required
+def config():
     current = load_json('config.json')
     if request.method == 'GET':
         return jsonify({
@@ -428,8 +446,7 @@ def config(current_user):
             'users': current.get('users', []),
             'ratio_prompt': current.get('ratio_prompt', {})
         })
-    if current_user != 'admin':
-        return jsonify({'error': 'Forbidden'}), 403
+    
     incoming = request.get_json()
     current['openai_api_key'] = incoming.get('openai_api_key', current.get('openai_api_key'))
     current['default_prompt'] = incoming.get('default_prompt', current.get('default_prompt'))
@@ -438,10 +455,8 @@ def config(current_user):
     return jsonify({'success': True})
 
 @app.route("/api/config/prompts", methods=["POST"])
-@token_required
-def update_prompts(current_user):
-    if current_user != "admin":
-        return jsonify({"error": "Unauthorized"}), 403
+@admin_required
+def update_prompts():
 
     data = request.get_json()
     new_prompts = data.get("prompts", {})
@@ -454,8 +469,8 @@ def update_prompts(current_user):
 
 
 @app.route('/api/ratios', methods=['GET', 'POST'])
-@token_required
-def ratios(current_user):
+@admin_required
+def ratios():
     if request.method == 'GET':
         try:
             df = pd.read_excel("Ratio.xlsx", header=0)
@@ -464,8 +479,7 @@ def ratios(current_user):
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-    if current_user != 'admin':
-        return jsonify({'error': 'Forbidden'}), 403
+    
     data = request.get_json()
     try:
         df = pd.DataFrame(data)
@@ -475,10 +489,9 @@ def ratios(current_user):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/users', methods=['POST', 'DELETE'])
-@token_required
-def users(current_user):
-    if current_user != 'admin':
-        return jsonify({'error': 'Forbidden'}), 403
+@admin_required
+def users():
+    
     config = load_json('config.json')
     users = config.get('users', [])
     data = request.get_json()
@@ -497,16 +510,14 @@ def users(current_user):
     return jsonify({'success': True})
 
 @app.route('/api/companies')
-@token_required
-def companies(current_user):
+def companies():
     df = pd.read_csv('data.csv')
     names = df['full_report_sentence'].dropna().tolist()
     candidates = {line.split()[0] for line in names if len(line.split()) > 0}
     return jsonify({'companies': sorted(candidates)})
 
 @app.route('/api/disclaimer')
-@token_required
-def get_disclaimer_markdown(current_user):
+def get_disclaimer_markdown():
     path = os.path.join("static", "about", "disclaimer.md")
     try:
         with open(path, "r", encoding="utf-8") as f:

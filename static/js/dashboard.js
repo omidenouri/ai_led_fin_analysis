@@ -9,7 +9,35 @@ function parseJwt(token) {
 }
 const userPayload = parseJwt(token);
 const currentUser = userPayload?.username;
-if (!token) window.location.href = "/";
+
+window.addEventListener("DOMContentLoaded", () => {
+  showTab('searchTab'); // ensure intro loads by default
+});
+
+
+// Show/hide logout or login depending on token presence
+const logoutItem = document.getElementById("logoutMenuItem");
+const loginItem = document.getElementById("loginMenuItem");
+
+if (token) {
+  logoutItem?.classList.remove("hidden");
+  loginItem?.classList.add("hidden");
+} else {
+  logoutItem?.classList.add("hidden");
+  loginItem?.classList.remove("hidden");
+}
+
+
+if (currentUser !== "admin") {
+  document.getElementById("archiveTabBtn")?.classList.add("hidden");
+  document.getElementById("settingsTabBtn")?.classList.add("hidden");
+  document.querySelectorAll(".delete-btn").forEach(btn => btn.classList.add("hidden"));
+}
+
+
+if (!token) {
+  console.log("Guest access enabled");
+}
 
 function showTab(tabId) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
@@ -385,6 +413,7 @@ document.getElementById("searchTab").classList.remove("hidden");
 document.getElementById("aboutContent").innerHTML = "";
 
   e.preventDefault();
+  document.getElementById("screenLock").classList.remove("hidden");
   const btn = this.querySelector("button");
   btn.disabled = true;
   btn.textContent = "Loading...";
@@ -671,6 +700,8 @@ requestAnimationFrame(() => {
 
   btn.disabled = false;
   btn.textContent = "Search";
+
+  document.getElementById("screenLock").classList.add("hidden");
 });
 
 
